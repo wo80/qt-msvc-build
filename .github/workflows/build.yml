@@ -1,0 +1,66 @@
+name: Build artifact
+
+on:
+  push:
+    branches:
+      - dev
+    paths-ignore:
+      - 'README.md'
+
+jobs:
+  windows:
+    name: Windows build
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read version
+        shell: pwsh
+        run: |
+          $version = Get-Content "version.txt"
+          echo "QT_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "QT_VERSION=$version"
+          echo "INSTALL_PREFIX=$pwd\qt-$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "INSTALL_PREFIX=$pwd\qt-$version"
+
+      - name: Download sources
+        run: |
+          curl -L -o qtbase-everywhere-opensource-src.zip https://download.qt.io/official_releases/qt/5.15/%QT_VERSION%/submodules/qtbase-everywhere-opensource-src-%QT_VERSION%.zip
+          7z x qtbase-everywhere-opensource-src.zip
+
+      - name: Configure
+        run: |
+          cd qtbase-everywhere-src-%QT_VERSION%
+          mkdir build
+          cd build
+          ..\configure -debug-and-release -nomake examples -nomake tests -schannel -opensource -confirm-license -mp -opengl desktop -prefix %INSTALL_PREFIX%
+
+      - name: Build
+        run: |
+          cd qtbase-everywhere-src-%QT_VERSION%\build
+          nmake
+
+      - name: Install
+        run: |
+          cd qtbase-everywhere-src-%QT_VERSION%\build
+          nmake install
+
+      - name: Pack
+        run: |
+          xcopy .\qtbase-everywhere-src-%QT_VERSION%\LICENSE.* %INSTALL_PREFIX% /Y
+          7z a qt-%QT_VERSION%-msvc2022-x64.7z %INSTALL_PREFIX%/* -xr!*.pdb
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: qt-${{env.QT_VERSION}}-msvc2022-x64.7z
+          compression-level: 0
+          retention-days: 3
