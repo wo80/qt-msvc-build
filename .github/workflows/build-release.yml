@@ -21,7 +21,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Read version
         shell: pwsh
@@ -34,7 +34,7 @@ jobs:
 
       - name: Download sources
         run: |
-          curl -L -o qtbase-everywhere-opensource-src.zip https://download.qt.io/official_releases/qt/5.15/%QT_VERSION%/submodules/qtbase-everywhere-opensource-src-%QT_VERSION%.zip
+          curl -L -o qtbase-everywhere-opensource-src.zip https://download.qt.io/archive/qt/5.15/%QT_VERSION%/submodules/qtbase-everywhere-opensource-src-%QT_VERSION%.zip
           7z x qtbase-everywhere-opensource-src.zip
 
       - name: Configure

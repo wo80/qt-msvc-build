@@ -20,7 +20,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Read version
         shell: pwsh
@@ -33,7 +33,7 @@ jobs:
 
       - name: Download sources
         run: |
-          curl -L -o qtbase-everywhere-opensource-src.zip https://download.qt.io/official_releases/qt/5.15/%QT_VERSION%/submodules/qtbase-everywhere-opensource-src-%QT_VERSION%.zip
+          curl -L -o qtbase-everywhere-opensource-src.zip https://download.qt.io/archive/qt/5.15/%QT_VERSION%/submodules/qtbase-everywhere-opensource-src-%QT_VERSION%.zip
           7z x qtbase-everywhere-opensource-src.zip
 
       - name: Configure
@@ -59,7 +59,7 @@ jobs:
           7z a qt-%QT_VERSION%-msvc2022-x64.7z %INSTALL_PREFIX%/* -xr!*.pdb
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           path: qt-${{env.QT_VERSION}}-msvc2022-x64.7z
           compression-level: 0
