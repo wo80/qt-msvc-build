@@ -18,10 +18,12 @@ jobs:
 
     steps:
       - name: Setup MSVC
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
 
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Read version
         shell: pwsh
@@ -57,13 +59,13 @@ jobs:
       - name: Pack
         run: |
           xcopy .\qtbase-everywhere-src-%QT_VERSION%\LICENSE.* %INSTALL_PREFIX% /Y
-          7z a qt-%QT_VERSION%-msvc2022-x64.7z %INSTALL_PREFIX%/* -xr!*.pdb
+          7z a qt-%QT_VERSION%-msvc2026-x64.7z %INSTALL_PREFIX%/* -xr!*.pdb
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/v')
         with:
           body: "Release Qt v${{env.QT_VERSION}} shared libraries for MSVC"
-          files: qt-${{env.QT_VERSION}}-msvc2022-x64.7z
+          files: qt-${{env.QT_VERSION}}-msvc2026-x64.7z
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

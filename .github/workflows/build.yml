@@ -17,10 +17,12 @@ jobs:
 
     steps:
       - name: Setup MSVC
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
 
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Read version
         shell: pwsh
@@ -56,11 +58,11 @@ jobs:
       - name: Pack
         run: |
           xcopy .\qtbase-everywhere-src-%QT_VERSION%\LICENSE.* %INSTALL_PREFIX% /Y
-          7z a qt-%QT_VERSION%-msvc2022-x64.7z %INSTALL_PREFIX%/* -xr!*.pdb
+          7z a qt-%QT_VERSION%-msvc2026-x64.7z %INSTALL_PREFIX%/* -xr!*.pdb
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
-          path: qt-${{env.QT_VERSION}}-msvc2022-x64.7z
+          path: qt-${{env.QT_VERSION}}-msvc2026-x64.7z
           compression-level: 0
           retention-days: 3
